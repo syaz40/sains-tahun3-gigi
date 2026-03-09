@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi Debaran 3.0)</title>
+    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi Audio Stabil)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -169,28 +169,45 @@
     </div>
 
     <script>
-        // Sistem Audio yang diperkukuh
+        // Memastikan audio boleh dimainkan dengan memuatkan objek Audio dengan lebih awal
         const sounds = {
-            bg: new Audio('https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3'), // Suspenseful/Quiz
-            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'), // Ticking
-            correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_bb4c36098d.mp3'), // Success
-            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73051.mp3'), // Buzzer
-            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_145d315907.mp3') // Fanfare
+            bg: new Audio('https://cdn.pixabay.com/audio/2024/05/23/audio_822080a273.mp3'), // Suspense/Ambient Quiz
+            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'),
+            correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_bb4c36098d.mp3'),
+            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73051.mp3'),
+            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_145d315907.mp3')
         };
 
         sounds.bg.loop = true;
-        sounds.bg.volume = 0.2;
+        sounds.bg.volume = 0.25;
         let isMuted = false;
         let audioUnlocked = false;
+
+        // Fungsi bantuan untuk memainkan bunyi tanpa ralat
+        function playSFX(key) {
+            if (isMuted) return;
+            const sound = sounds[key];
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio Error:", e));
+            }
+        }
 
         function toggleMusic() {
             isMuted = !isMuted;
             const icon = document.getElementById('music-icon');
-            if (isMuted) { sounds.bg.pause(); icon.innerText = '🔇'; }
-            else { if(audioUnlocked) sounds.bg.play(); icon.innerText = '🔊'; }
+            if (isMuted) {
+                sounds.bg.pause();
+                icon.innerText = '🔇';
+            } else {
+                if (audioUnlocked) {
+                    sounds.bg.play().catch(e => console.log("Audio Error:", e));
+                }
+                icon.innerText = '🔊';
+            }
         }
 
-        // Senarai Murid
+        // Database Murid 3 UPM
         let students = ["Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah", "Hadif Rayyan", "Izzara Sofea", "Muhammad Adam", "Muhammad Ammar", "Muhammad Aqil", "Muhammad Arshad", "Muhammad Ashraf", "Muhammad Danish", "Muhammad Fattah", "Muhammad Hafiz", "Muhammad Haziq", "Muhammad Iman", "Muhammad Irfan", "Muhammad Izwan", "Muhammad Luqman", "Muhammad Mikhail", "Muhammad Nabil", "Muhammad Nazmi", "Muhammad Qayyum", "Muhammad Rayyan", "Muhammad Rizqi", "Muhammad Syahmi", "Muhammad Syamil", "Muhammad Uwais", "Muhammad Zafri", "Nur Aisha", "Nur Batrisya", "Nur Damia", "Nur Farhana", "Nur Humaira", "Nurul Izzah", "Zarith Sofia"];
 
         const functionLibrary = [
@@ -224,18 +241,18 @@
 
         function pickName() {
             if (students.length === 0) return;
-            
-            // Aktifkan audio pada klik pertama
+
+            // Aktifkan kebenaran audio pelayar pada sentuhan pertama
             if (!audioUnlocked) {
                 audioUnlocked = true;
-                if(!isMuted) sounds.bg.play().catch(e => console.log("Audio block:", e));
+                if (!isMuted) sounds.bg.play().catch(() => {});
             }
 
             const btn = document.getElementById('btn-pick');
             const display = document.getElementById('name-display');
             btn.disabled = true;
-            sounds.spin.currentTime = 0;
-            sounds.spin.play();
+            
+            playSFX('spin');
 
             let count = 0;
             const interval = setInterval(() => {
@@ -326,7 +343,7 @@
             const draggedEl = document.querySelector(`[data-id="${data.id}"]`);
 
             if (data.type === zone.dataset.type && data.category === zone.dataset.category && zone.children.length <= 1) {
-                sounds.correct.currentTime = 0; sounds.correct.play();
+                playSFX('correct');
                 zone.innerHTML = '';
                 const success = draggedEl.cloneNode(true);
                 success.className = "flex flex-col items-center justify-center animate-bounce text-center scale-90";
@@ -335,7 +352,7 @@
                 score++; updateScore();
                 if(score === 6) finish();
             } else {
-                sounds.wrong.currentTime = 0; sounds.wrong.play();
+                playSFX('wrong');
                 zone.classList.add('bg-rose-900/40', 'border-rose-500');
                 setTimeout(() => zone.classList.remove('bg-rose-900/40', 'border-rose-500'), 600);
             }
@@ -345,7 +362,7 @@
 
         function finish() {
             clearInterval(timer);
-            sounds.victory.play();
+            playSFX('victory');
             showScreen('screen-result');
             document.getElementById('result-message').innerHTML = `Luar biasa, <b>${currentStudent.toUpperCase()}</b>!<br>Selesai dalam masa <span class="text-orange-500 font-black">${seconds} SAAT</span>!`;
             createConfetti();

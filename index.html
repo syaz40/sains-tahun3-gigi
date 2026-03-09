@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi Audio Stabil)</title>
+    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi Audio Dinamik)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -109,10 +109,9 @@
 
         <!-- SKRIN 3: GAME BOARD -->
         <div id="screen-game" class="hidden p-8">
-            <!-- Statistik Gergasi -->
-            <div class="flex flex-col lg:flex-row justify-between items-center mb-12 bg-slate-700/50 p-10 rounded-[4rem] border border-slate-600">
+            <div class="flex flex-col lg:flex-row justify-between items-center mb-12 bg-slate-700/50 p-10 rounded-[4rem] border border-slate-600 shadow-lg">
                 <div class="bg-slate-900/60 px-10 py-6 rounded-3xl border border-slate-600 mb-6 lg:mb-0">
-                    <span class="text-2xl text-slate-500 font-bold uppercase">PAKAR:</span>
+                    <span class="text-2xl text-slate-500 font-bold uppercase tracking-widest">PAKAR:</span>
                     <span id="current-player" class="text-4xl font-black text-white ml-4">---</span>
                 </div>
                 <div class="flex gap-16">
@@ -127,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- Slots -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
                 <div class="bg-slate-700/30 p-8 rounded-[3rem] border border-slate-600 flex flex-col items-center">
                     <div class="slot-title">GIGI KACIP</div>
@@ -149,7 +147,6 @@
                 </div>
             </div>
 
-            <!-- Pool -->
             <div class="bg-slate-900/60 p-12 rounded-[4rem] border-4 border-slate-700 shadow-inner">
                 <h3 class="text-center font-black text-slate-500 mb-10 uppercase tracking-[0.4em] text-2xl italic">Hati-hati! Pilih yang berkaitan sahaja:</h3>
                 <div id="draggable-pool" class="flex flex-wrap justify-center gap-8"></div>
@@ -169,27 +166,38 @@
     </div>
 
     <script>
-        // Memastikan audio boleh dimainkan dengan memuatkan objek Audio dengan lebih awal
+        // Memuatkan audio bertema Gameshow/Quiz
         const sounds = {
-            bg: new Audio('https://cdn.pixabay.com/audio/2024/05/23/audio_822080a273.mp3'), // Suspense/Ambient Quiz
-            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'),
+            intro: new Audio('https://cdn.pixabay.com/audio/2021/08/09/audio_03d2e96041.mp3'), // Fast intro/percussion
+            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'),  // Spin ticking
+            whoosh: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_510526e08a.mp3'), // Transition
+            game_bg: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_106752d507.mp3'), // Suspense heartbeat
             correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_bb4c36098d.mp3'),
-            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73051.mp3'),
-            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_145d315907.mp3')
+            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_f59c259885.mp3'),
+            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_338902d26f.mp3') // Victory Fanfare
         };
 
-        sounds.bg.loop = true;
-        sounds.bg.volume = 0.25;
+        sounds.intro.loop = true;
+        sounds.intro.volume = 0.3;
+        sounds.game_bg.loop = true;
+        sounds.game_bg.volume = 0.4;
+        
         let isMuted = false;
         let audioUnlocked = false;
 
-        // Fungsi bantuan untuk memainkan bunyi tanpa ralat
+        function stopAllSounds() {
+            Object.values(sounds).forEach(s => {
+                s.pause();
+                s.currentTime = 0;
+            });
+        }
+
         function playSFX(key) {
             if (isMuted) return;
-            const sound = sounds[key];
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(e => console.log("Audio Error:", e));
+            const s = sounds[key];
+            if(s) {
+                s.currentTime = 0;
+                s.play().catch(e => {});
             }
         }
 
@@ -197,17 +205,20 @@
             isMuted = !isMuted;
             const icon = document.getElementById('music-icon');
             if (isMuted) {
-                sounds.bg.pause();
+                Object.values(sounds).forEach(s => s.pause());
                 icon.innerText = '🔇';
             } else {
-                if (audioUnlocked) {
-                    sounds.bg.play().catch(e => console.log("Audio Error:", e));
-                }
                 icon.innerText = '🔊';
+                // Jika sedang dalam game, resume game_bg
+                if(!document.getElementById('screen-game').classList.contains('hidden')) {
+                    sounds.game_bg.play();
+                } else if (!document.getElementById('screen-picker').classList.contains('hidden') && audioUnlocked) {
+                    sounds.intro.play();
+                }
             }
         }
 
-        // Database Murid 3 UPM
+        // Senarai Murid 3 UPM
         let students = ["Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah", "Hadif Rayyan", "Izzara Sofea", "Muhammad Adam", "Muhammad Ammar", "Muhammad Aqil", "Muhammad Arshad", "Muhammad Ashraf", "Muhammad Danish", "Muhammad Fattah", "Muhammad Hafiz", "Muhammad Haziq", "Muhammad Iman", "Muhammad Irfan", "Muhammad Izwan", "Muhammad Luqman", "Muhammad Mikhail", "Muhammad Nabil", "Muhammad Nazmi", "Muhammad Qayyum", "Muhammad Rayyan", "Muhammad Rizqi", "Muhammad Syahmi", "Muhammad Syamil", "Muhammad Uwais", "Muhammad Zafri", "Nur Aisha", "Nur Batrisya", "Nur Damia", "Nur Farhana", "Nur Humaira", "Nurul Izzah", "Zarith Sofia"];
 
         const functionLibrary = [
@@ -242,10 +253,12 @@
         function pickName() {
             if (students.length === 0) return;
 
-            // Aktifkan kebenaran audio pelayar pada sentuhan pertama
+            // Unlock audio pada interaksi pertama
             if (!audioUnlocked) {
                 audioUnlocked = true;
-                if (!isMuted) sounds.bg.play().catch(() => {});
+                if (!isMuted) sounds.intro.play().catch(() => {});
+            } else {
+                if (!isMuted) sounds.intro.play();
             }
 
             const btn = document.getElementById('btn-pick');
@@ -265,22 +278,30 @@
                     currentStudent = students[idx];
                     students.splice(idx, 1);
                     document.getElementById('remaining-count').innerText = students.length;
-                    display.classList.add('text-blue-400', 'scale-110');
+                    display.classList.add('text-sky-400', 'scale-110');
                     setTimeout(() => {
                         showScreen('screen-ready');
                         document.getElementById('ready-name').innerText = currentStudent.toUpperCase();
-                    }, 1500);
+                    }, 1200);
                 }
             }, 80);
         }
 
         function startGame() {
+            stopAllSounds();
+            playSFX('whoosh');
+            
             showScreen('screen-game');
             document.getElementById('current-player').innerText = currentStudent.toUpperCase();
             score = 0; seconds = 0;
             updateScore();
             initPool();
             
+            if (!isMuted) {
+                sounds.game_bg.playbackRate = 1.0; // Reset speed
+                sounds.game_bg.play();
+            }
+
             document.getElementById('timer').innerText = "0";
             timer = setInterval(() => {
                 seconds++;
@@ -349,7 +370,15 @@
                 success.className = "flex flex-col items-center justify-center animate-bounce text-center scale-90";
                 zone.appendChild(success);
                 draggedEl.remove();
-                score++; updateScore();
+                
+                score++; 
+                updateScore();
+                
+                // Dinamik Muzik: Semakin banyak skor, semakin laju muzik latar
+                if(!isMuted) {
+                    sounds.game_bg.playbackRate = 1.0 + (score * 0.15);
+                }
+
                 if(score === 6) finish();
             } else {
                 playSFX('wrong');
@@ -358,33 +387,48 @@
             }
         }
 
-        function updateScore() { document.getElementById('score').innerText = `${score}/6`; }
+        function updateScore() { 
+            document.getElementById('score').innerText = `${score}/6`; 
+        }
 
         function finish() {
             clearInterval(timer);
+            stopAllSounds();
             playSFX('victory');
+            
             showScreen('screen-result');
             document.getElementById('result-message').innerHTML = `Luar biasa, <b>${currentStudent.toUpperCase()}</b>!<br>Selesai dalam masa <span class="text-orange-500 font-black">${seconds} SAAT</span>!`;
             createConfetti();
         }
 
         function resetToPicker() {
+            stopAllSounds();
             document.getElementById('btn-pick').disabled = false;
             document.getElementById('name-display').innerText = "SEDIA?";
-            document.getElementById('name-display').classList.remove('text-blue-400', 'scale-110');
+            document.getElementById('name-display').classList.remove('text-sky-400', 'scale-110');
             showScreen('screen-picker');
+            
+            if(!isMuted && audioUnlocked) sounds.intro.play();
+
             document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = `<span class="uppercase opacity-20">${z.dataset.category}</span>`);
         }
 
         function createConfetti() {
-            for(let i=0; i<100; i++) {
+            for(let i=0; i<120; i++) {
                 const c = document.createElement('div');
-                c.className = 'fixed w-4 h-4 z-[1000]';
+                c.className = 'fixed w-5 h-5 z-[1000]';
                 c.style.left = Math.random() * 100 + 'vw';
-                c.style.backgroundColor = ['#38bdf8', '#fb7185', '#fbbf24', '#34d399'][Math.floor(Math.random()*4)];
+                c.style.backgroundColor = ['#38bdf8', '#fb7185', '#fbbf24', '#34d399', '#a855f7'][Math.floor(Math.random()*5)];
                 c.style.top = '-20px';
+                c.style.borderRadius = i % 2 === 0 ? '50%' : '2px';
                 document.body.appendChild(c);
-                c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(105vh) rotate(${Math.random() * 1000}deg)`, opacity: 0 }], { duration: 3000 }).onfinish = () => c.remove();
+                c.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 }, 
+                    { transform: `translateY(105vh) rotate(${Math.random() * 1200}deg)`, opacity: 0 }
+                ], { 
+                    duration: 2000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0, .9, .6, 1)'
+                }).onfinish = () => c.remove();
             }
         }
     </script>

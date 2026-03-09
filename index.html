@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sains Tahun 3: Mari Kenali Gigi! (Versi TV)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #e0f2fe;
+            touch-action: manipulation;
+            overflow-x: hidden;
+        }
+        h1, .font-title {
+            font-family: 'Fredoka One', cursive;
+        }
+        .drop-zone {
+            min-height: 160px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .drop-zone.drag-over {
+            background-color: #bbf7d0;
+            border-color: #16a34a;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(22, 163, 74, 0.3);
+        }
+        .draggable {
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.5rem;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .draggable.dragging {
+            opacity: 0.5;
+        }
+        .slot-title {
+            background: #0284c7;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <div id="game-container" class="max-w-7xl mx-auto bg-white rounded-[3rem] shadow-2xl border-[12px] border-sky-200">
+        
+        <header class="bg-sky-600 p-8 text-white text-center shadow-lg">
+            <h1 class="text-5xl md:text-6xl mb-3 tracking-wide">🦷 MISI PAKAR GIGI 🦷</h1>
+            <p class="text-2xl opacity-90 font-bold uppercase tracking-widest">Sains Tahun 3: 3 UPM</p>
+        </header>
+
+        <div id="screen-picker" class="p-12 text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <div class="mb-10">
+                <div class="w-64 h-64 bg-sky-50 rounded-full mx-auto flex items-center justify-center border-8 border-dashed border-sky-400 relative overflow-hidden shadow-inner">
+                    <div id="picker-visual" class="text-9xl">👤</div>
+                </div>
+            </div>
+            <h2 class="text-4xl font-bold text-gray-700 mb-8">Siapa Pakar Gigi Seterusnya?</h2>
+            
+            <div id="name-display" class="text-6xl md:text-7xl font-title text-sky-600 mb-12 h-24 flex items-center justify-center bg-sky-50 px-12 rounded-3xl border-2 border-sky-100">
+                SEDIA?
+            </div>
+
+            <button onclick="pickName()" id="btn-pick" class="bg-orange-500 hover:bg-orange-600 text-white text-4xl px-20 py-8 rounded-full font-title shadow-2xl transform active:scale-95 transition-all hover:scale-105">
+                PUSING NAMA!
+            </button>
+        </div>
+
+        <div id="screen-game" class="hidden p-6 md:p-10">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 bg-sky-50 p-6 rounded-[2rem] border-4 border-sky-100">
+                <div class="flex items-center gap-6">
+                    <div class="bg-white px-8 py-4 rounded-2xl shadow-md border-4 border-sky-400">
+                        <span class="text-2xl text-gray-500">Murid:</span>
+                        <span id="current-player" class="text-4xl font-black text-sky-700 ml-2">---</span>
+                    </div>
+                </div>
+                <div class="flex gap-6 mt-6 md:mt-0">
+                    <div class="bg-white px-8 py-4 rounded-2xl shadow-md border-4 border-orange-400">
+                        <span class="text-2xl text-gray-500">Masa:</span>
+                        <span id="timer" class="text-4xl font-black text-orange-600 ml-2">45s</span>
+                    </div>
+                    <div class="bg-white px-8 py-4 rounded-2xl shadow-md border-4 border-green-400">
+                        <span class="text-2xl text-gray-500">Skor:</span>
+                        <span id="score" class="text-4xl font-black text-green-600 ml-2">0/6</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="bg-blue-50 p-6 rounded-[2.5rem] border-4 border-blue-200 flex flex-col items-center shadow-lg">
+                    <div class="slot-title shadow-md">GIGI KACIP</div>
+                    <div class="text-7xl mb-4">🦷</div>
+                    <div id="slot-kacip-function" data-type="kacip" data-category="function" class="drop-zone w-full border-4 border-dashed border-blue-300 rounded-2xl mb-4 flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-blue-400 font-bold uppercase">Fungsi</p>
+                    </div>
+                    <div id="slot-kacip-food" data-type="kacip" data-category="food" class="drop-zone w-full border-4 border-dashed border-blue-300 rounded-2xl flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-blue-400 font-bold uppercase">Makanan</p>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 p-6 rounded-[2.5rem] border-4 border-red-200 flex flex-col items-center shadow-lg">
+                    <div class="slot-title bg-red-600 shadow-md">GIGI TARING</div>
+                    <div class="text-7xl mb-4">🧛</div>
+                    <div id="slot-taring-function" data-type="taring" data-category="function" class="drop-zone w-full border-4 border-dashed border-red-300 rounded-2xl mb-4 flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-red-400 font-bold uppercase">Fungsi</p>
+                    </div>
+                    <div id="slot-taring-food" data-type="taring" data-category="food" class="drop-zone w-full border-4 border-dashed border-red-300 rounded-2xl flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-red-400 font-bold uppercase">Makanan</p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 p-6 rounded-[2.5rem] border-4 border-yellow-200 flex flex-col items-center shadow-lg">
+                    <div class="slot-title bg-yellow-600 shadow-md">GIGI GERAHAM</div>
+                    <div class="text-7xl mb-4">🦷</div>
+                    <div id="slot-geraham-function" data-type="geraham" data-category="function" class="drop-zone w-full border-4 border-dashed border-yellow-300 rounded-2xl mb-4 flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-yellow-400 font-bold uppercase">Fungsi</p>
+                    </div>
+                    <div id="slot-geraham-food" data-type="geraham" data-category="food" class="drop-zone w-full border-4 border-dashed border-yellow-300 rounded-2xl flex flex-col items-center justify-center p-4">
+                        <p class="text-lg text-yellow-400 font-bold uppercase">Makanan</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-100 p-8 rounded-[3rem] border-4 border-gray-300 shadow-inner">
+                <h3 class="text-center font-black text-gray-500 mb-6 uppercase tracking-widest text-xl">Sila Pilih Dan Tarik Ke Atas:</h3>
+                <div id="draggable-pool" class="flex flex-wrap justify-center gap-6"></div>
+            </div>
+        </div>
+
+        <div id="screen-result" class="hidden p-20 text-center">
+            <div class="text-[10rem] mb-10">🏆</div>
+            <h2 class="text-7xl font-title text-sky-600 mb-6">TAHNIAH!</h2>
+            <p id="result-text" class="text-4xl mb-12 text-gray-700">---</p>
+            <button onclick="resetToPicker()" class="bg-sky-600 hover:bg-sky-700 text-white text-4xl px-16 py-8 rounded-full font-title shadow-2xl transition-transform hover:scale-110">
+                MURID SETERUSNYA
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            "Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah",
+            "Hadif Rayyan", "Izzara Sofea", "Muhammad Adam", "Muhammad Ammar", "Muhammad Aqil",
+            "Muhammad Arshad", "Muhammad Ashraf", "Muhammad Danish", "Muhammad Fattah", "Muhammad Hafiz",
+            "Muhammad Haziq", "Muhammad Iman", "Muhammad Irfan", "Muhammad Izwan", "Muhammad Luqman",
+            "Muhammad Mikhail", "Muhammad Nabil", "Muhammad Nazmi", "Muhammad Qayyum", "Muhammad Rayyan",
+            "Muhammad Rizqi", "Muhammad Syahmi", "Muhammad Syamil", "Muhammad Uwais", "Muhammad Zafri",
+            "Nur Aisha", "Nur Batrisya", "Nur Damia", "Nur Farhana", "Nur Humaira", "Nurul Izzah", "Zarith Sofia"
+        ];
+
+        const functionLibrary = [
+            { id: 'f1', text: 'MEMOTONG', type: 'kacip' },
+            { id: 'f2', text: 'MENGOYAK', type: 'taring' },
+            { id: 'f3', text: 'MELUMAT', type: 'geraham' }
+        ];
+
+        const foodLibrary = {
+            kacip: [{ id: 'k1', emoji: '🍎', name: 'EPAL' }, { id: 'k2', emoji: '🥕', name: 'LOBAK' }, { id: 'k3', emoji: '🍞', name: 'ROTI' }, { id: 'k4', emoji: '🍫', name: 'COKLAT' }],
+            taring: [{ id: 't1', emoji: '🍗', name: 'AYAM' }, { id: 't2', emoji: '🥩', name: 'DAGING' }, { id: 't3', emoji: '🦑', name: 'SOTONG' }, { id: 't4', emoji: '🐟', name: 'IKAN' }],
+            geraham: [{ id: 'g1', emoji: '🥜', name: 'KACANG' }, { id: 'g2', emoji: '🍪', name: 'BISKUT' }, { id: 'g3', emoji: '🌽', name: 'JAGUNG' }, { id: 'g4', emoji: '🍚', name: 'NASI' }]
+        };
+
+        let currentStudent = "";
+        let timeLeft = 45;
+        let score = 0;
+        let timerInterval;
+
+        function showScreen(screenId) {
+            ['screen-picker', 'screen-game', 'screen-result'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function pickName() {
+            const btn = document.getElementById('btn-pick');
+            const display = document.getElementById('name-display');
+            btn.disabled = true;
+            let counter = 0;
+            const interval = setInterval(() => {
+                const randomName = students[Math.floor(Math.random() * students.length)];
+                display.innerText = randomName.toUpperCase();
+                counter++;
+                if(counter > 25) {
+                    clearInterval(interval);
+                    currentStudent = randomName;
+                    display.classList.add('scale-110', 'text-orange-600', 'bg-orange-50');
+                    setTimeout(() => startGame(), 2000);
+                }
+            }, 80);
+        }
+
+        function startGame() {
+            showScreen('screen-game');
+            document.getElementById('current-player').innerText = currentStudent.toUpperCase();
+            score = 0;
+            timeLeft = 45;
+            updateScore();
+            initDraggables();
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft + "s";
+                if(timeLeft <= 0) { clearInterval(timerInterval); finishGame(false); }
+            }, 1000);
+        }
+
+        function initDraggables() {
+            const pool = document.getElementById('draggable-pool');
+            pool.innerHTML = '';
+            const selectedFoods = [
+                { ...foodLibrary.kacip[Math.floor(Math.random() * 4)], type: 'kacip', category: 'food' },
+                { ...foodLibrary.taring[Math.floor(Math.random() * 4)], type: 'taring', category: 'food' },
+                { ...foodLibrary.geraham[Math.floor(Math.random() * 4)], type: 'geraham', category: 'food' }
+            ];
+            const allItems = [...functionLibrary.map(f => ({ ...f, category: 'function' })), ...selectedFoods].sort(() => Math.random() - 0.5);
+
+            allItems.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'draggable bg-white border-4 border-gray-300 p-6 rounded-2xl shadow-xl flex items-center gap-4 font-black';
+                el.draggable = true;
+                el.dataset.type = item.type;
+                el.dataset.category = item.category;
+                el.dataset.id = item.id;
+                el.innerHTML = item.category === 'function' ? `<span class="text-3xl">⚙️</span> <span class="text-2xl">${item.text}</span>` : `<span class="text-5xl">${item.emoji}</span> <span class="text-2xl">${item.name}</span>`;
+                el.addEventListener('dragstart', e => { 
+                    e.target.classList.add('dragging'); 
+                    e.dataTransfer.setData('text/plain', JSON.stringify(e.target.dataset)); 
+                });
+                el.addEventListener('dragend', e => e.target.classList.remove('dragging'));
+                pool.appendChild(el);
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                zone.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('drag-over');
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const draggedEl = document.querySelector(`[data-id="${data.id}"]`);
+
+            if (zone.dataset.type === data.type && zone.dataset.category === data.category && zone.children.length <= 1) {
+                zone.innerHTML = '';
+                const successItem = draggedEl.cloneNode(true);
+                successItem.className = "flex flex-col items-center justify-center animate-bounce";
+                zone.appendChild(successItem);
+                draggedEl.remove();
+                score++;
+                updateScore();
+                if(score === 6) finishGame(true);
+            } else {
+                zone.classList.add('bg-red-200');
+                setTimeout(() => zone.classList.remove('bg-red-200'), 500);
+            }
+        }
+
+        function updateScore() { document.getElementById('score').innerText = `${score}/6`; }
+
+        function finishGame(win) {
+            clearInterval(timerInterval);
+            showScreen('screen-result');
+            const resultText = document.getElementById('result-text');
+            if(win) {
+                resultText.innerHTML = `Hebat, <b>${currentStudent.toUpperCase()}</b>!<br>Pakar Gigi sejati dalam ${45 - timeLeft} saat!`;
+                createConfetti();
+            } else {
+                resultText.innerHTML = `Masa tamat! <b>${currentStudent.toUpperCase()}</b>,<br>cuba lagi nanti!`;
+            }
+        }
+
+        function resetToPicker() {
+            document.getElementById('btn-pick').disabled = false;
+            document.getElementById('name-display').innerText = "SEDIA?";
+            showScreen('screen-picker');
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.innerHTML = `<p class="text-lg font-bold opacity-40 uppercase">${zone.dataset.category}</p>`;
+            });
+        }
+
+        function createConfetti() {
+            for(let i=0; i<80; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#ffed4a', '#f66d9b', '#64d5ca', '#38c172'][Math.floor(Math.random()*4)];
+                c.style.top = '-20px';
+                document.body.appendChild(c);
+                c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(105vh) rotate(720deg)`, opacity: 0 }], { duration: 3000 }).onfinish = () => c.remove();
+            }
+        }
+    </script>
+</body>
+</html>

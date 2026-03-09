@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sains Tahun 3: Cabaran Pakar Gigi (Edisi 37 Murid)</title>
+    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi 3.0)</title>
     
     <!-- Memuatkan utiliti reka bentuk dan animasi -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #1e293b; 
+            background-color: #1e293b; /* Kelabu Gelap Slate 800 */
             touch-action: none; 
             overflow: hidden;
             height: 100vh;
@@ -21,93 +21,103 @@
         }
         h1, .font-title { font-family: 'Fredoka One', cursive; }
         
-        /* Gaya Zon Letak Jawapan */
+        /* Gaya Zon Letak Jawapan - Dibesarkan untuk TV 55 inci */
         .drop-zone {
-            min-height: 120px;
+            min-height: 160px;
             transition: all 0.2s ease;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 2px dashed rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 4px dashed rgba(255, 255, 255, 0.15);
         }
         .drop-zone.drag-over {
-            background-color: rgba(34, 197, 94, 0.2);
+            background-color: rgba(34, 197, 94, 0.25);
             border-color: #22c55e;
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
 
-        /* Gaya Item yang ditarik */
+        /* Gaya Item yang ditarik - Teks Gergasi */
         .draggable {
             cursor: grab;
             user-select: none;
             touch-action: none;
+            font-size: 1.5rem;
         }
-        .draggable.dragging { opacity: 0.4; }
+        .draggable.dragging { opacity: 0.3; }
 
-        /* Elemen bayangan semasa menarik (Proxy jari) */
+        /* Proxy jari semasa menarik (Proxy visual) */
         #drag-proxy {
             position: fixed;
             pointer-events: none;
             z-index: 9999;
             display: none;
-            opacity: 0.9;
+            opacity: 0.95;
             transform: translate(-50%, -50%);
+            pointer-events: none;
         }
 
         .slot-title {
             background: #0ea5e9;
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 10px 25px;
+            border-radius: 40px;
             display: inline-block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
             font-weight: 800;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
-        .timer-glow { text-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
+        .timer-glow { text-shadow: 0 0 30px rgba(249, 115, 22, 0.8); }
         
-        /* Skrin Khas untuk Aktifkan Audio (Penting untuk iPad) */
+        /* Skrin Aktivasi Audio */
         #audio-unlock-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #1e293b, #0f172a);
+            background: radial-gradient(circle, #334155, #0f172a);
             z-index: 10000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
+
+        .btn-large {
+            font-size: 3rem;
+            padding: 2rem 5rem;
+            border-radius: 100px;
+            box-shadow: 0 15px 0 #1d4ed8;
+            transition: all 0.1s;
+        }
+        .btn-large:active {
+            transform: translateY(10px);
+            box-shadow: 0 5px 0 #1d4ed8;
+        }
     </style>
 </head>
-<body class="p-2 md:p-4 text-slate-100">
+<body class="p-4 text-slate-100">
 
-    <!-- OVERLAY MULA: Wajib untuk kebenaran audio di iPad/Chrome -->
+    <!-- OVERLAY MULA: Wajib untuk memaksa Audio di iPad Pro -->
     <div id="audio-unlock-overlay">
-        <div class="text-center p-8 bg-slate-800 rounded-[3rem] border-4 border-sky-500 shadow-2xl">
-            <h1 class="text-5xl text-sky-400 mb-4 font-title">PAKAR GIGI 3 UPM</h1>
-            <p class="text-slate-300 mb-8 text-xl italic">Sila pastikan "Silent Mode" iPad ditutup.</p>
-            <button onclick="initAudioSystem()" class="bg-blue-600 hover:bg-blue-500 text-white text-3xl px-16 py-8 rounded-full font-title shadow-[0_10px_0_#1d4ed8] active:translate-y-2 active:shadow-none transition-all">
-                KLIK UNTUK MULA
+        <div class="text-center p-12 bg-slate-800 rounded-[4rem] border-8 border-sky-500 shadow-[0_0_100px_rgba(14,165,233,0.3)]">
+            <h1 class="text-7xl text-sky-400 mb-6 font-title">PAKAR GIGI 3 UPM</h1>
+            <p class="text-slate-300 mb-12 text-3xl italic">Pastikan suara iPad dihidupkan (Bukan Mute).</p>
+            <button onclick="initAudioSystem()" class="btn-large bg-blue-600 hover:bg-blue-500 text-white font-title">
+                MULA SEKARANG
             </button>
         </div>
     </div>
 
-    <!-- Proxy visual semasa menarik jawapan -->
-    <div id="drag-proxy" class="bg-white text-slate-900 p-3 rounded-xl shadow-2xl font-bold flex items-center gap-2 border-4 border-blue-500"></div>
+    <!-- Proxy visual semasa menarik jawapan (Saiz Gergasi) -->
+    <div id="drag-proxy" class="bg-white text-slate-900 p-6 rounded-3xl shadow-2xl font-black flex items-center gap-4 border-8 border-blue-500 scale-125"></div>
 
-    <div id="game-container" class="max-w-6xl mx-auto bg-slate-800 rounded-[3rem] shadow-2xl overflow-hidden border-[10px] border-slate-700 relative h-full flex flex-col">
+    <div id="game-container" class="max-w-7xl mx-auto bg-slate-800 rounded-[4rem] shadow-2xl overflow-hidden border-[15px] border-slate-700 relative h-full flex flex-col">
         
-        <!-- Butang Mute -->
-        <div class="absolute top-4 right-4 z-50">
-            <button onclick="toggleMusicBtn()" class="bg-slate-700/50 hover:bg-slate-600 text-white p-3 rounded-xl border border-slate-500 transition-all">
-                <span id="music-icon" class="text-2xl">🔊</span>
-            </button>
-        </div>
-
         <!-- Header -->
-        <header class="bg-slate-700/50 p-4 text-center border-b border-slate-600">
-            <h1 class="text-3xl md:text-5xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-300 to-blue-500 font-title">🦷 CABARAN PAKAR GIGI 🦷</h1>
-            <div class="flex justify-center items-center gap-4 mt-1">
-                <p class="text-sm text-slate-400 font-bold uppercase tracking-widest">Sains Tahun 3</p>
-                <div class="bg-sky-500/20 text-sky-300 px-3 py-1 rounded-full text-xs font-black border border-sky-500/20">
+        <header class="bg-slate-700/50 p-8 text-center border-b-4 border-slate-600">
+            <div class="flex justify-between items-center px-10">
+                <div class="text-left">
+                    <p class="text-2xl text-slate-400 font-bold uppercase tracking-widest">Sains Tahun 3</p>
+                    <h1 class="text-5xl md:text-7xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-sky-300 to-blue-500 font-title">🦷 CABARAN PAKAR GIGI</h1>
+                </div>
+                <div class="bg-sky-500/20 text-sky-300 px-8 py-4 rounded-3xl text-3xl font-black border-4 border-sky-500/20">
                     BAKI: <span id="remaining-count">37</span>
                 </div>
             </div>
@@ -116,82 +126,100 @@
         <div class="flex-grow overflow-hidden relative">
             
             <!-- SKRIN 1: PILIH NAMA -->
-            <div id="screen-picker" class="absolute inset-0 p-8 text-center flex flex-col justify-center items-center">
-                <div class="mb-4">
-                    <div class="w-40 h-40 bg-slate-700 rounded-full flex items-center justify-center border-4 border-dashed border-slate-600">
-                        <div id="picker-visual" class="text-[5rem]">👤</div>
+            <div id="screen-picker" class="absolute inset-0 p-10 text-center flex flex-col justify-center items-center">
+                <div class="mb-8">
+                    <div class="w-64 h-64 bg-slate-700 rounded-full flex items-center justify-center border-8 border-dashed border-slate-600 shadow-inner">
+                        <div id="picker-visual" class="text-[10rem]">👤</div>
                     </div>
                 </div>
-                <h2 class="text-xl text-slate-400 mb-4 font-bold uppercase tracking-tighter">Pilih Pakar Seterusnya...</h2>
-                <div id="name-display" class="text-2xl md:text-4xl font-title text-white mb-8 min-h-[80px] flex items-center justify-center bg-slate-900/40 px-8 rounded-3xl border border-slate-600 shadow-xl w-full max-w-2xl leading-tight">
+                <h2 class="text-4xl text-slate-400 mb-8 font-bold uppercase tracking-widest">Siapa Pakar Seterusnya?</h2>
+                <div id="name-display" class="text-5xl md:text-7xl font-title text-white mb-12 min-h-[140px] flex items-center justify-center bg-slate-900/60 px-16 rounded-[3rem] border-4 border-slate-600 shadow-2xl w-full max-w-5xl leading-tight">
                     SEDIA?
                 </div>
-                <button onclick="pickName()" id="btn-pick" class="bg-blue-600 hover:bg-blue-500 text-white text-3xl px-16 py-6 rounded-full font-title shadow-[0_8px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
-                    PUSING NAMA
+                <button onclick="pickName()" id="btn-pick" class="bg-blue-600 hover:bg-blue-500 text-white text-6xl px-24 py-10 rounded-full font-title shadow-[0_12px_0_#1d4ed8] active:translate-y-2 active:shadow-none transition-all">
+                    PUSING NAMA!
                 </button>
             </div>
 
             <!-- SKRIN 2: READY -->
-            <div id="screen-ready" class="hidden absolute inset-0 p-8 text-center flex flex-col justify-center items-center bg-slate-800">
-                <h2 class="text-2xl text-sky-400 font-title mb-4 italic">Murid Sila Ke Hadapan...</h2>
-                <div id="ready-name" class="text-3xl md:text-5xl font-black text-white mb-8 uppercase text-center leading-tight bg-slate-900/50 p-8 rounded-[2rem] border-2 border-slate-700 w-full max-w-3xl">---</div>
-                <button onclick="startGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-5xl px-24 py-10 rounded-full font-title shadow-2xl animate-pulse">
-                    MULA!
+            <div id="screen-ready" class="hidden absolute inset-0 p-12 text-center flex flex-col justify-center items-center bg-slate-800">
+                <h2 class="text-5xl text-sky-400 font-title mb-8 italic">Murid Sila Ke Hadapan...</h2>
+                <div id="ready-name" class="text-5xl md:text-8xl font-black text-white mb-14 uppercase text-center leading-tight bg-slate-900/50 p-16 rounded-[4rem] border-4 border-slate-700 w-full max-w-6xl shadow-2xl">---</div>
+                <button onclick="startGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-7xl px-32 py-14 rounded-full font-title shadow-[0_15px_0_#059669] active:translate-y-2 active:shadow-none transition-all animate-pulse">
+                    MULA SEKARANG!
                 </button>
             </div>
 
             <!-- SKRIN 3: GAME BOARD -->
-            <div id="screen-game" class="hidden absolute inset-0 p-4 flex flex-col">
-                <div class="flex justify-between items-center mb-3 bg-slate-700/40 p-4 rounded-3xl border border-slate-600">
-                    <div class="bg-slate-900/60 px-4 py-2 rounded-2xl border border-slate-600 max-w-[50%]">
-                        <span id="current-player" class="text-sm md:text-base font-black text-white truncate block">---</span>
+            <div id="screen-game" class="hidden absolute inset-0 p-6 flex flex-col">
+                <!-- Statistik Semasa Gergasi -->
+                <div class="flex justify-between items-center mb-6 bg-slate-700/60 p-8 rounded-[3rem] border-4 border-slate-600 shadow-xl">
+                    <div class="bg-slate-900/80 px-10 py-6 rounded-[2rem] border-4 border-slate-600 max-w-[50%]">
+                        <span id="current-player" class="text-4xl font-black text-white truncate block">---</span>
                     </div>
-                    <div class="flex gap-6">
+                    <div class="flex gap-16">
                         <div class="text-center">
-                            <p class="text-[10px] text-slate-500 font-black">MASA</p>
-                            <div id="timer" class="text-3xl font-black text-orange-500 timer-glow leading-none">0</div>
+                            <p class="text-xl text-slate-500 font-black tracking-widest uppercase">Masa</p>
+                            <div id="timer" class="text-8xl font-black text-orange-500 timer-glow leading-none">0</div>
                         </div>
                         <div class="text-center">
-                            <p class="text-[10px] text-slate-500 font-black">SKOR</p>
-                            <div id="score" class="text-3xl font-black text-emerald-400 leading-none">0/6</div>
+                            <p class="text-xl text-slate-500 font-black tracking-widest uppercase">Skor</p>
+                            <div id="score" class="text-8xl font-black text-emerald-400 leading-none">0/6</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-3 mb-3">
+                <!-- Kawasan Slot Gigi - Dengan Gambar Imej SVG -->
+                <div class="grid grid-cols-3 gap-8 mb-8">
                     <!-- Gigi Kacip -->
-                    <div class="bg-slate-700/30 p-2 rounded-2xl border border-slate-600 flex flex-col items-center">
-                        <div class="slot-title">KACIP</div>
-                        <div id="slot-kacip-function" data-type="kacip" data-category="function" class="drop-zone w-full rounded-xl mb-2 flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Fungsi</div>
-                        <div id="slot-kacip-food" data-type="kacip" data-category="food" class="drop-zone w-full rounded-xl flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Makanan</div>
+                    <div class="bg-slate-700/30 p-6 rounded-[3rem] border-4 border-slate-600 flex flex-col items-center shadow-lg">
+                        <div class="slot-title">GIGI KACIP</div>
+                        <div class="w-24 h-24 mb-4">
+                            <svg viewBox="0 0 100 100" class="w-full h-full fill-white opacity-80">
+                                <path d="M20,10 L80,10 L85,80 C85,90 75,95 50,95 C25,95 15,90 15,80 Z" />
+                            </svg>
+                        </div>
+                        <div id="slot-kacip-function" data-type="kacip" data-category="function" class="drop-zone w-full rounded-[2rem] mb-4 flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Fungsi</div>
+                        <div id="slot-kacip-food" data-type="kacip" data-category="food" class="drop-zone w-full rounded-[2rem] flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Makanan</div>
                     </div>
                     <!-- Gigi Taring -->
-                    <div class="bg-slate-700/30 p-2 rounded-2xl border border-slate-600 flex flex-col items-center">
-                        <div class="slot-title bg-rose-600">TARING</div>
-                        <div id="slot-taring-function" data-type="taring" data-category="function" class="drop-zone w-full rounded-xl mb-2 flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Fungsi</div>
-                        <div id="slot-taring-food" data-type="taring" data-category="food" class="drop-zone w-full rounded-xl flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Makanan</div>
+                    <div class="bg-slate-700/30 p-6 rounded-[3rem] border-4 border-slate-600 flex flex-col items-center shadow-lg">
+                        <div class="slot-title bg-rose-600">GIGI TARING</div>
+                        <div class="w-24 h-24 mb-4">
+                            <svg viewBox="0 0 100 100" class="w-full h-full fill-rose-500 opacity-80">
+                                <path d="M50,95 C20,95 15,80 15,70 L25,10 L50,40 L75,10 L85,70 C85,80 80,95 50,95 Z" />
+                            </svg>
+                        </div>
+                        <div id="slot-taring-function" data-type="taring" data-category="function" class="drop-zone w-full rounded-[2rem] mb-4 flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Fungsi</div>
+                        <div id="slot-taring-food" data-type="taring" data-category="food" class="drop-zone w-full rounded-[2rem] flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Makanan</div>
                     </div>
                     <!-- Gigi Geraham -->
-                    <div class="bg-slate-700/30 p-2 rounded-2xl border border-slate-600 flex flex-col items-center">
-                        <div class="slot-title bg-amber-600">GERAHAM</div>
-                        <div id="slot-geraham-function" data-type="geraham" data-category="function" class="drop-zone w-full rounded-xl mb-2 flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Fungsi</div>
-                        <div id="slot-geraham-food" data-type="geraham" data-category="food" class="drop-zone w-full rounded-xl flex items-center justify-center p-1 text-slate-600 font-black text-[10px] uppercase">Makanan</div>
+                    <div class="bg-slate-700/30 p-6 rounded-[3rem] border-4 border-slate-600 flex flex-col items-center shadow-lg">
+                        <div class="slot-title bg-amber-600">GIGI GERAHAM</div>
+                        <div class="w-24 h-24 mb-4">
+                            <svg viewBox="0 0 100 100" class="w-full h-full fill-amber-500 opacity-80">
+                                <path d="M20,20 C20,10 40,5 50,20 C60,5 80,10 80,20 L85,80 C85,90 75,95 50,95 C25,95 15,90 15,80 Z" />
+                                <rect x="30" y="25" width="40" height="10" rx="5" fill="black" opacity="0.2"/>
+                            </svg>
+                        </div>
+                        <div id="slot-geraham-function" data-type="geraham" data-category="function" class="drop-zone w-full rounded-[2rem] mb-4 flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Fungsi</div>
+                        <div id="slot-geraham-food" data-type="geraham" data-category="food" class="drop-zone w-full rounded-[2rem] flex items-center justify-center p-4 text-slate-500 font-black text-2xl uppercase">Makanan</div>
                     </div>
                 </div>
 
-                <!-- Pool Jawapan -->
-                <div class="bg-slate-900/60 p-4 rounded-[2rem] border-2 border-slate-700 flex-grow overflow-y-auto">
-                    <h3 class="text-center font-black text-slate-500 mb-3 uppercase text-[10px] italic">Tarik jawapan yang betul sahaja ke atas:</h3>
-                    <div id="draggable-pool" class="flex flex-wrap justify-center gap-2"></div>
+                <!-- Kawasan Jawapan Gergasi -->
+                <div class="bg-slate-900/80 p-10 rounded-[4rem] border-4 border-slate-700 flex-grow overflow-y-auto shadow-inner">
+                    <h3 class="text-center font-black text-slate-500 mb-6 uppercase text-2xl italic tracking-widest underline decoration-sky-500 underline-offset-8">Tarik jawapan yang betul ke atas:</h3>
+                    <div id="draggable-pool" class="flex flex-wrap justify-center gap-6"></div>
                 </div>
             </div>
 
             <!-- SKRIN 4: RESULT -->
-            <div id="screen-result" class="hidden absolute inset-0 p-8 text-center flex flex-col justify-center items-center">
-                <div class="text-[6rem] mb-4">🏆</div>
-                <h2 class="text-4xl font-title text-emerald-400 mb-2">SYABAS PAKAR!</h2>
-                <div id="result-message" class="text-xl mb-8 text-slate-300 px-6">---</div>
-                <button onclick="resetToPicker()" class="bg-slate-700 hover:bg-slate-600 text-white text-3xl px-12 py-5 rounded-full font-title shadow-xl">
+            <div id="screen-result" class="hidden absolute inset-0 p-12 text-center flex flex-col justify-center items-center">
+                <div class="text-[15rem] mb-10 drop-shadow-[0_0_50px_rgba(251,191,36,0.5)] animate-bounce">🏆</div>
+                <h2 class="text-9xl font-title text-emerald-400 mb-6">SYABAS PAKAR!</h2>
+                <div id="result-message" class="text-5xl mb-16 text-slate-300 px-10 leading-tight">---</div>
+                <button onclick="resetToPicker()" class="btn-large bg-sky-600 hover:bg-sky-500 text-white font-title">
                     MURID SETERUSNYA
                 </button>
             </div>
@@ -200,7 +228,7 @@
 
     <script>
         // ========================================================
-        // 1. ENJIN AUDIO (SYNTH) - Wajib untuk iPad
+        // 1. ENJIN AUDIO SYNTH (Sangat Berkuasa & iPad Friendly)
         // ========================================================
         const AudioEngine = {
             ctx: null,
@@ -212,7 +240,8 @@
             init() {
                 if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
                 if (this.ctx.state === 'suspended') this.ctx.resume();
-                this.playTone(440, 'sine', 0.1, 0.1); // Bunyi ujian awal
+                console.log("Audio Engine Ready.");
+                this.playTone(440, 'sine', 0.1, 0.05); // Beep tanda sedia
             },
 
             playTone(freq, type, duration, vol) {
@@ -232,15 +261,20 @@
             },
 
             sfx: {
-                spin: () => AudioEngine.playTone(800, 'sine', 0.05, 0.02),
+                spin: () => AudioEngine.playTone(600 + (Math.random()*400), 'sine', 0.05, 0.02),
                 correct: () => {
-                    AudioEngine.playTone(523.25, 'sine', 0.1, 0.1);
-                    setTimeout(() => AudioEngine.playTone(659.25, 'sine', 0.2, 0.1), 100);
+                    AudioEngine.playTone(523.25, 'sine', 0.15, 0.15);
+                    setTimeout(() => AudioEngine.playTone(659.25, 'sine', 0.25, 0.15), 100);
+                    setTimeout(() => AudioEngine.playTone(783.99, 'sine', 0.35, 0.15), 200);
                 },
-                wrong: () => AudioEngine.playTone(150, 'sawtooth', 0.3, 0.1),
+                wrong: () => {
+                    AudioEngine.playTone(150, 'sawtooth', 0.4, 0.15);
+                    AudioEngine.playTone(100, 'square', 0.4, 0.1);
+                },
                 victory: () => {
-                    [523, 659, 783, 1046].forEach((f, i) => {
-                        setTimeout(() => AudioEngine.playTone(f, 'sine', 0.5, 0.1), i * 150);
+                    const notes = [523, 659, 783, 1046, 1318, 1568];
+                    notes.forEach((f, i) => {
+                        setTimeout(() => AudioEngine.playTone(f, 'sine', 0.8, 0.1), i * 150);
                     });
                 }
             },
@@ -252,12 +286,15 @@
                 const loop = () => {
                     if (this.isMuted || !this.ctx) return;
                     if (this.gameMode) {
-                        if (beat % 4 === 0) this.playTone(60, 'triangle', 0.4, 0.15); // Bass debaran
-                        this.playTone(1000, 'sine', 0.02, 0.01); // Jam randuk
+                        // Muzik Berdebar Gergasi
+                        if (beat % 4 === 0) this.playTone(50, 'square', 0.5, 0.2); 
+                        if (beat % 2 === 0) this.playTone(1200, 'sine', 0.03, 0.01); 
                         beat++;
-                        this.bgLoop = setTimeout(loop, 500 / this.speed);
+                        this.bgLoop = setTimeout(loop, 400 / this.speed);
                     } else {
-                        if (beat % 4 === 0) this.playTone(329.63, 'square', 0.1, 0.03);
+                        // Intro santai
+                        if (beat % 4 === 0) this.playTone(329.63, 'square', 0.2, 0.05);
+                        if (beat % 4 === 2) this.playTone(392, 'square', 0.2, 0.04);
                         beat++;
                         this.bgLoop = setTimeout(loop, 600);
                     }
@@ -307,49 +344,48 @@
         ];
 
         // ========================================================
-        // 3. LIBRARY JAWAPAN GERGASI (PENGEMBANGAN)
+        // 3. LIBRARY JAWAPAN GERGASI (TIADA LAGI BOSAN)
         // ========================================================
         const functionLibrary = [
-            { id: 'f1', text: 'MEMOTONG', type: 'kacip' },
-            { id: 'f2', text: 'MENGOYAK', type: 'taring' },
-            { id: 'f3', text: 'MELUMAT', type: 'geraham' }
+            { id: 'f1', text: 'MEMOTONG MAKANAN', type: 'kacip' },
+            { id: 'f2', text: 'MENGOYAK MAKANAN', type: 'taring' },
+            { id: 'f3', text: 'MELUMAT MAKANAN', type: 'geraham' }
         ];
 
         const foodLibrary = {
             kacip: [
                 { emoji: '🍎', name: 'EPAL' }, { emoji: '🥕', name: 'LOBAK' }, { emoji: '🍞', name: 'ROTI' },
                 { emoji: '🍉', name: 'TEMBIKAI' }, { emoji: '🥒', name: 'TIMUN' }, { emoji: '🍐', name: 'PEAR' },
-                { emoji: '🍫', name: 'COKLAT' }, { emoji: '🥔', name: 'KENTANG' }
+                { emoji: '🍫', name: 'COKLAT' }, { emoji: '🥔', name: 'KENTANG' }, { emoji: '🧇', name: 'WAFEL' }
             ],
             taring: [
                 { emoji: '🍗', name: 'AYAM' }, { emoji: '🥩', name: 'DAGING' }, { emoji: '🦑', name: 'SOTONG' },
                 { emoji: '🦐', name: 'UDANG' }, { emoji: '🐟', name: 'IKAN' }, { emoji: '🍖', name: 'KAMBING' },
-                { emoji: '🦀', name: 'KETAM' }, { emoji: '🥓', name: 'SALAI' }
+                { emoji: '🦀', name: 'KETAM' }, { emoji: '🥓', name: 'DAGING SALAI' }, { emoji: '🦃', name: 'AYAM BELANDA' }
             ],
             geraham: [
                 { emoji: '🥜', name: 'KACANG' }, { emoji: '🍪', name: 'BISKUT' }, { emoji: '🌽', name: 'JAGUNG' },
                 { emoji: '🍚', name: 'NASI' }, { emoji: '🌰', name: 'BADAM' }, { emoji: '🌻', name: 'KUACI' },
-                { emoji: '🥣', name: 'BIJIRIN' }, { emoji: '🍘', name: 'KEROPOK' }
+                { emoji: '🥣', name: 'BIJIRIN' }, { emoji: '🍘', name: 'KEROPOK' }, { emoji: '🍝', name: 'MI' }
             ]
         };
 
         const distractors = [
-            { text: 'MENGHIDU', type: 'wrong', category: 'function', emoji: '👃' },
-            { text: 'MELIHAT', type: 'wrong', category: 'function', emoji: '👁️' },
-            { text: 'MENDENGAR', type: 'wrong', category: 'function', emoji: '👂' },
-            { text: 'BERJALAN', type: 'wrong', category: 'function', emoji: '🚶' },
-            { emoji: '🪨', name: 'BATU', type: 'wrong', category: 'food' },
-            { emoji: '🪵', name: 'KAYU', type: 'wrong', category: 'food' },
-            { emoji: '🥄', name: 'SUDU', type: 'wrong', category: 'food' },
-            { emoji: '✏️', name: 'PENSEL', type: 'wrong', category: 'food' },
-            { emoji: '📄', name: 'KERTAS', type: 'wrong', category: 'food' },
-            { emoji: '🧸', name: 'TEDDY', type: 'wrong', category: 'food' }
+            { text: 'MENGHIDU BAU', type: 'wrong', category: 'function', emoji: '👃' },
+            { text: 'MELIHAT CAHAYA', type: 'wrong', category: 'function', emoji: '👁️' },
+            { text: 'MENDENGAR BUNYI', type: 'wrong', category: 'function', emoji: '👂' },
+            { text: 'BERJALAN LAJU', type: 'wrong', category: 'function', emoji: '🚶' },
+            { emoji: '🪨', name: 'BATU BESAR', type: 'wrong', category: 'food' },
+            { emoji: '🪵', name: 'KAYU KERING', type: 'wrong', category: 'food' },
+            { emoji: '🥄', name: 'SUDU BESI', type: 'wrong', category: 'food' },
+            { emoji: '✏️', name: 'PENSEL KAYU', type: 'wrong', category: 'food' },
+            { emoji: '🧸', name: 'TEDDY BEAR', type: 'wrong', category: 'food' }
         ];
 
         let currentStudent = "", seconds = 0, score = 0, timer = null;
 
         // ========================================================
-        // 4. SISTEM TOUCH DRAG (iPad Pro Friendly)
+        // 4. SISTEM TOUCH DRAG (iPad Pro Friendly - SAH)
         // ========================================================
         let touchTarget = null;
         const dragProxy = document.getElementById('drag-proxy');
@@ -358,6 +394,10 @@
             document.addEventListener('touchstart', (e) => {
                 const el = e.target.closest('.draggable');
                 if (!el) return;
+                
+                // Pastikan audio hidup pada setiap sentuhan (Penting untuk Chrome iPad)
+                if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
+
                 touchTarget = el;
                 const rect = el.getBoundingClientRect();
                 dragProxy.innerHTML = el.innerHTML;
@@ -365,7 +405,6 @@
                 dragProxy.style.display = 'flex';
                 updateProxyPos(e.touches[0].clientX, e.touches[0].clientY);
                 el.classList.add('dragging');
-                if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
             }, {passive: false});
 
             document.addEventListener('touchmove', (e) => {
@@ -380,8 +419,10 @@
                 const y = e.changedTouches[0].clientY;
                 dragProxy.style.display = 'none';
                 touchTarget.classList.remove('dragging');
+                
                 const zone = document.elementsFromPoint(x, y).find(el => el.classList.contains('drop-zone'));
                 if (zone) handleDropLogic(JSON.parse(touchTarget.dataset.info), zone, touchTarget);
+                
                 touchTarget = null;
             });
         }
@@ -410,7 +451,7 @@
                 display.innerText = temp;
                 AudioEngine.sfx.spin();
                 count++;
-                if(count > 20) {
+                if(count > 25) {
                     clearInterval(interval);
                     const idx = Math.floor(Math.random() * students.length);
                     currentStudent = students[idx];
@@ -420,9 +461,9 @@
                     setTimeout(() => {
                         showScreen('screen-ready');
                         document.getElementById('ready-name').innerText = currentStudent;
-                    }, 1000);
+                    }, 1200);
                 }
-            }, 80);
+            }, 70);
         }
 
         function startGame() {
@@ -443,22 +484,23 @@
         function initPool() {
             const pool = document.getElementById('draggable-pool');
             pool.innerHTML = '';
-            // Pilih makanan rawak daripada library besar
+            
+            // Pilih makanan rawak daripada library besar (X-Bosan)
             const correctFoods = [
                 { ...foodLibrary.kacip[Math.floor(Math.random() * foodLibrary.kacip.length)], type: 'kacip', category: 'food' },
                 { ...foodLibrary.taring[Math.floor(Math.random() * foodLibrary.taring.length)], type: 'taring', category: 'food' },
                 { ...foodLibrary.geraham[Math.floor(Math.random() * foodLibrary.geraham.length)], type: 'geraham', category: 'food' }
             ];
-            // Pilih 3 pengganggu rawak
-            const shuffledDist = [...distractors].sort(() => 0.5 - Math.random()).slice(0, 3);
+            // Pilih 4 pengganggu rawak
+            const shuffledDist = [...distractors].sort(() => 0.5 - Math.random()).slice(0, 4);
             const allItems = [...functionLibrary.map(f => ({ ...f, category: 'function' })), ...correctFoods, ...shuffledDist].sort(() => 0.5 - Math.random());
 
             allItems.forEach(item => {
                 const el = document.createElement('div');
-                el.className = 'draggable bg-slate-700 border-2 border-slate-600 p-2 md:p-3 rounded-xl shadow-lg flex items-center gap-2 font-black text-[10px] md:text-xs active:scale-95';
+                el.className = 'draggable bg-slate-700 border-4 border-slate-600 p-5 rounded-[2rem] shadow-2xl flex items-center gap-4 font-black text-2xl active:scale-95 transition-transform hover:bg-slate-600';
                 el.dataset.info = JSON.stringify(item);
-                if(item.category === 'function') el.innerHTML = `<span>⚙️</span> <span>${item.text}</span>`;
-                else el.innerHTML = `<span class="text-xl">${item.emoji}</span> <span>${item.name || item.text}</span>`;
+                if(item.category === 'function') el.innerHTML = `<span class="text-4xl">⚙️</span> <span>${item.text}</span>`;
+                else el.innerHTML = `<span class="text-5xl">${item.emoji}</span> <span>${item.name || item.text}</span>`;
                 pool.appendChild(el);
             });
         }
@@ -477,8 +519,8 @@
                 if(score === 6) finish();
             } else {
                 AudioEngine.sfx.wrong();
-                zone.classList.add('bg-rose-900/40', 'border-rose-500');
-                setTimeout(() => zone.classList.remove('bg-rose-900/40', 'border-rose-500'), 500);
+                zone.classList.add('bg-rose-900/60', 'border-rose-500');
+                setTimeout(() => zone.classList.remove('bg-rose-900/60', 'border-rose-500'), 500);
             }
         }
 
@@ -489,8 +531,8 @@
             AudioEngine.stopMusic();
             AudioEngine.sfx.victory();
             showScreen('screen-result');
-            document.getElementById('result-message').innerHTML = `Luar Biasa <b>${currentStudent}</b>!<br>Berjaya dalam masa <span class="text-emerald-400">${seconds} SAAT</span>!`;
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+            document.getElementById('result-message').innerHTML = `Luar Biasa <b>${currentStudent}</b>!<br>Berjaya dalam masa <span class="text-emerald-400 font-black">${seconds} SAAT</span>!`;
+            confetti({ particleCount: 300, spread: 100, origin: { y: 0.6 } });
         }
 
         function resetToPicker() {
@@ -500,7 +542,7 @@
             document.getElementById('name-display').classList.remove('text-sky-400', 'scale-110');
             showScreen('screen-picker');
             AudioEngine.startMusic('intro');
-            document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = `<span class="uppercase opacity-20 text-[9px]">${z.dataset.category}</span>`);
+            document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = `<span class="uppercase opacity-20 text-xl font-black">${z.dataset.category}</span>`);
         }
 
         window.onload = () => initTouchEvents();

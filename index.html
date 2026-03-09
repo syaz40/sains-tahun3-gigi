@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sains Tahun 3: Pakar Gigi (Versi Muzik & TV)</title>
+    <title>Sains Tahun 3: Cabaran Pakar Gigi (Versi Debaran)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #f0f9ff;
+            background-color: #0f172a; /* Warna gelap sikit untuk vibe debaran */
             touch-action: manipulation;
             overflow-x: hidden;
         }
@@ -19,13 +19,13 @@
         .drop-zone {
             min-height: 180px;
             transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.6);
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 3px dashed rgba(255, 255, 255, 0.2);
         }
         .drop-zone.drag-over {
-            background-color: #bbf7d0;
-            border-color: #16a34a;
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(22, 163, 74, 0.4);
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            transform: scale(1.02);
         }
         .draggable {
             cursor: grab;
@@ -38,199 +38,166 @@
             opacity: 0.5;
         }
         .slot-title {
-            background: #0284c7;
+            background: #0ea5e9;
             color: white;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border-radius: 40px;
             display: inline-block;
             margin-bottom: 15px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
         }
-        .confetti {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            z-index: 1000;
+        .timer-glow {
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
         }
-        .btn-pulse {
-            animation: pulse 2s infinite;
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(249, 115, 22, 0.5); }
-            100% { transform: scale(1); }
-        }
-        /* Style untuk butang audio */
-        #audio-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 50;
+        .bg-pattern {
+            background-image: radial-gradient(#1e293b 2px, transparent 2px);
+            background-size: 30px 30px;
         }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-10 bg-pattern min-h-screen text-slate-100">
 
-    <div id="game-container" class="max-w-[1400px] mx-auto bg-white rounded-[4rem] shadow-2xl overflow-hidden border-[15px] border-sky-200 relative">
+    <div id="game-container" class="max-w-[1400px] mx-auto bg-slate-900 rounded-[4rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden border-[15px] border-slate-800 relative">
         
-        <!-- Butang Kawalan Muzik -->
-        <div id="audio-control">
-            <button onclick="toggleMusic()" class="bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition-all">
+        <!-- Kawalan Audio -->
+        <div class="absolute top-8 right-8 z-50">
+            <button onclick="toggleMusic()" class="bg-slate-700/50 hover:bg-slate-600 text-white p-4 rounded-2xl border border-slate-600 transition-all">
                 <span id="music-icon" class="text-3xl">🔊</span>
             </button>
         </div>
 
-        <!-- Header Utama -->
-        <header class="bg-sky-600 p-8 text-white text-center shadow-lg relative">
-            <h1 class="text-5xl md:text-7xl mb-2 tracking-wide">🦷 MISI PAKAR GIGI 🦷</h1>
-            <div class="flex justify-center items-center gap-4">
-                <p class="text-2xl opacity-90 font-bold uppercase tracking-widest">Sains Tahun 3: 3 UPM</p>
-                <div class="bg-white/20 px-4 py-1 rounded-full text-lg">
-                    Baki Murid: <span id="remaining-count" class="font-black">37</span>
+        <!-- Header -->
+        <header class="bg-gradient-to-b from-slate-800 to-slate-900 p-10 text-center border-b border-slate-700">
+            <h1 class="text-6xl md:text-7xl mb-4 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">🦷 CABARAN PAKAR GIGI 🦷</h1>
+            <div class="flex justify-center items-center gap-6">
+                <p class="text-2xl text-slate-400 font-bold uppercase tracking-[0.2em]">Sains Tahun 3 • 3 UPM</p>
+                <div class="bg-sky-500/20 text-sky-400 border border-sky-500/30 px-6 py-2 rounded-full text-xl font-black">
+                    BAKI: <span id="remaining-count">37</span>
                 </div>
             </div>
         </header>
 
         <!-- SKRIN 1: NAME PICKER -->
-        <div id="screen-picker" class="p-12 text-center min-h-[65vh] flex flex-col justify-center items-center">
-            <div class="mb-10">
-                <div class="w-72 h-72 bg-sky-50 rounded-full mx-auto flex items-center justify-center border-8 border-dashed border-sky-400 relative overflow-hidden shadow-inner">
-                    <div id="picker-visual" class="text-[10rem]">👤</div>
+        <div id="screen-picker" class="p-16 text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <div class="mb-12 relative">
+                <div class="w-80 h-80 bg-slate-800 rounded-full flex items-center justify-center border-8 border-dashed border-slate-700 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+                    <div id="picker-visual" class="text-[10rem] animate-bounce">👤</div>
                 </div>
             </div>
-            <h2 class="text-4xl font-bold text-gray-700 mb-8">Siapa Pakar Gigi Seterusnya?</h2>
+            <h2 class="text-4xl text-slate-400 mb-10 font-medium">Siapa bakal sahut cabaran?</h2>
             
-            <div id="name-display" class="text-7xl md:text-8xl font-title text-sky-600 mb-12 min-h-[120px] flex items-center justify-center bg-sky-50 px-16 rounded-[3rem] border-4 border-sky-100 shadow-sm">
+            <div id="name-display" class="text-7xl md:text-8xl font-title text-white mb-16 min-h-[140px] flex items-center justify-center bg-slate-800/50 px-20 rounded-[3rem] border border-slate-700 shadow-2xl">
                 SEDIA?
             </div>
 
-            <button onclick="pickName()" id="btn-pick" class="bg-orange-500 hover:bg-orange-600 text-white text-5xl px-24 py-10 rounded-full font-title shadow-2xl transform active:scale-95 transition-all hover:scale-105">
-                PUSING NAMA!
+            <button onclick="pickName()" id="btn-pick" class="bg-blue-600 hover:bg-blue-500 text-white text-5xl px-28 py-10 rounded-full font-title shadow-[0_10px_40px_rgba(37,99,235,0.4)] transform active:scale-95 transition-all">
+                PUSING NAMA
             </button>
         </div>
 
-        <!-- SKRIN 2: PERSEDIAAN (READY SCREEN) -->
-        <div id="screen-ready" class="hidden p-12 text-center min-h-[65vh] flex flex-col justify-center items-center bg-orange-50">
-            <h2 class="text-5xl text-orange-600 font-title mb-6 italic">Pakar Seterusnya Adalah...</h2>
-            <div id="ready-name" class="text-8xl font-black text-gray-800 mb-12 uppercase tracking-tight">---</div>
-            <p class="text-3xl text-gray-600 mb-12">Murid sila datang ke hadapan iPad/TV!</p>
-            <button onclick="startGame()" class="btn-pulse bg-green-500 hover:bg-green-600 text-white text-7xl px-32 py-12 rounded-full font-title shadow-2xl transition-all">
-                MULA SEKARANG!
+        <!-- SKRIN 2: READY -->
+        <div id="screen-ready" class="hidden p-20 text-center min-h-[60vh] flex flex-col justify-center items-center bg-slate-900/50">
+            <h2 class="text-4xl text-blue-400 font-title mb-8 italic">Pakar Seterusnya Adalah...</h2>
+            <div id="ready-name" class="text-9xl font-black text-white mb-16 uppercase tracking-tighter">---</div>
+            <p class="text-3xl text-slate-400 mb-16">Sila bersedia di hadapan TV!</p>
+            <button onclick="startGame()" class="bg-emerald-500 hover:bg-emerald-400 text-white text-7xl px-32 py-12 rounded-full font-title shadow-[0_15px_50px_rgba(16,185,129,0.3)] animate-pulse transition-all">
+                MULA!
             </button>
         </div>
 
-        <!-- SKRIN 3: PAPAN PERMAINAN -->
-        <div id="screen-game" class="hidden p-6 md:p-10">
-            <!-- Statistik Gergasi -->
-            <div class="flex flex-col lg:flex-row justify-between items-center mb-10 bg-sky-50 p-8 rounded-[3rem] border-4 border-sky-100 shadow-sm">
-                <div class="bg-white px-10 py-6 rounded-3xl shadow-md border-4 border-sky-400 mb-4 lg:mb-0">
-                    <span class="text-3xl text-gray-500 font-bold">PAKAR:</span>
-                    <span id="current-player" class="text-5xl font-black text-sky-700 ml-4">---</span>
+        <!-- SKRIN 3: GAME BOARD -->
+        <div id="screen-game" class="hidden p-8">
+            <!-- Stats -->
+            <div class="flex flex-col lg:flex-row justify-between items-center mb-12 bg-slate-800/50 p-10 rounded-[4rem] border border-slate-700">
+                <div class="bg-slate-900 px-10 py-6 rounded-3xl border border-slate-700 mb-6 lg:mb-0">
+                    <span class="text-2xl text-slate-500 font-bold uppercase">Pakar:</span>
+                    <span id="current-player" class="text-4xl font-black text-white ml-4">---</span>
                 </div>
-                <div class="flex gap-10">
-                    <div class="bg-white px-10 py-6 rounded-3xl shadow-md border-4 border-orange-400">
-                        <span class="text-3xl text-gray-500 font-bold">MASA:</span>
-                        <span id="timer" class="text-7xl font-black text-orange-600 ml-4">0s</span>
+                <div class="flex gap-12">
+                    <div class="text-center">
+                        <p class="text-xl text-slate-500 font-black mb-1">MASA (S)</p>
+                        <div id="timer" class="text-8xl font-black text-orange-500 timer-glow leading-none">0</div>
                     </div>
-                    <div class="bg-white px-10 py-6 rounded-3xl shadow-md border-4 border-green-400">
-                        <span class="text-3xl text-gray-500 font-bold">SKOR:</span>
-                        <span id="score" class="text-7xl font-black text-green-600 ml-4">0/6</span>
+                    <div class="text-center">
+                        <p class="text-xl text-slate-500 font-black mb-1">SKOR</p>
+                        <div id="score" class="text-8xl font-black text-emerald-400 leading-none">0/6</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Zon Target -->
+            <!-- Slots -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-                <div class="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-200 flex flex-col items-center shadow-xl">
-                    <div class="slot-title shadow-lg">GIGI KACIP</div>
-                    <div class="text-8xl mb-6">🦷</div>
-                    <div id="slot-kacip-function" data-type="kacip" data-category="function" class="drop-zone w-full border-4 border-dashed border-blue-300 rounded-[2rem] mb-6 flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-blue-400 font-black">FUNGSI</p>
-                    </div>
-                    <div id="slot-kacip-food" data-type="kacip" data-category="food" class="drop-zone w-full border-4 border-dashed border-blue-300 rounded-[2rem] flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-blue-400 font-black">MAKANAN</p>
-                    </div>
+                <!-- Kacip -->
+                <div class="bg-slate-800/40 p-8 rounded-[3rem] border border-slate-700 flex flex-col items-center">
+                    <div class="slot-title">GIGI KACIP</div>
+                    <div class="text-8xl mb-8 opacity-80">🦷</div>
+                    <div id="slot-kacip-function" data-type="kacip" data-category="function" class="drop-zone w-full rounded-[2.5rem] mb-6 flex items-center justify-center p-6 text-slate-600 font-black text-xl">FUNGSI</div>
+                    <div id="slot-kacip-food" data-type="kacip" data-category="food" class="drop-zone w-full rounded-[2.5rem] flex items-center justify-center p-6 text-slate-600 font-black text-xl">MAKANAN</div>
                 </div>
-
-                <div class="bg-red-50 p-8 rounded-[3rem] border-4 border-red-200 flex flex-col items-center shadow-xl">
-                    <div class="slot-title bg-red-600 shadow-lg">GIGI TARING</div>
-                    <div class="text-8xl mb-6">🧛</div>
-                    <div id="slot-taring-function" data-type="taring" data-category="function" class="drop-zone w-full border-4 border-dashed border-red-300 rounded-[2rem] mb-6 flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-red-400 font-black">FUNGSI</p>
-                    </div>
-                    <div id="slot-taring-food" data-type="taring" data-category="food" class="drop-zone w-full border-4 border-dashed border-red-300 rounded-[2rem] flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-red-400 font-black">MAKANAN</p>
-                    </div>
+                <!-- Taring -->
+                <div class="bg-slate-800/40 p-8 rounded-[3rem] border border-slate-700 flex flex-col items-center">
+                    <div class="slot-title bg-rose-600 shadow-rose-900/40">GIGI TARING</div>
+                    <div class="text-8xl mb-8 opacity-80">🧛</div>
+                    <div id="slot-taring-function" data-type="taring" data-category="function" class="drop-zone w-full rounded-[2.5rem] mb-6 flex items-center justify-center p-6 text-slate-600 font-black text-xl">FUNGSI</div>
+                    <div id="slot-taring-food" data-type="taring" data-category="food" class="drop-zone w-full rounded-[2.5rem] flex items-center justify-center p-6 text-slate-600 font-black text-xl">MAKANAN</div>
                 </div>
-
-                <div class="bg-yellow-50 p-8 rounded-[3rem] border-4 border-yellow-200 flex flex-col items-center shadow-xl">
-                    <div class="slot-title bg-yellow-600 shadow-lg">GIGI GERAHAM</div>
-                    <div class="text-8xl mb-6">🦷</div>
-                    <div id="slot-geraham-function" data-type="geraham" data-category="function" class="drop-zone w-full border-4 border-dashed border-yellow-300 rounded-[2rem] mb-6 flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-yellow-400 font-black">FUNGSI</p>
-                    </div>
-                    <div id="slot-geraham-food" data-type="geraham" data-category="food" class="drop-zone w-full border-4 border-dashed border-yellow-300 rounded-[2rem] flex flex-col items-center justify-center p-6">
-                        <p class="text-2xl text-yellow-400 font-black">MAKANAN</p>
-                    </div>
+                <!-- Geraham -->
+                <div class="bg-slate-800/40 p-8 rounded-[3rem] border border-slate-700 flex flex-col items-center">
+                    <div class="slot-title bg-amber-500 shadow-amber-900/40">GIGI GERAHAM</div>
+                    <div class="text-8xl mb-8 opacity-80">🦷</div>
+                    <div id="slot-geraham-function" data-type="geraham" data-category="function" class="drop-zone w-full rounded-[2.5rem] mb-6 flex items-center justify-center p-6 text-slate-600 font-black text-xl">FUNGSI</div>
+                    <div id="slot-geraham-food" data-type="geraham" data-category="food" class="drop-zone w-full rounded-[2.5rem] flex items-center justify-center p-6 text-slate-600 font-black text-xl">MAKANAN</div>
                 </div>
             </div>
 
-            <div class="bg-white p-10 rounded-[4rem] border-8 border-sky-100 shadow-inner">
-                <h3 class="text-center font-black text-gray-400 mb-8 uppercase tracking-[0.3em] text-2xl">TARIK JAWAPAN KE ATAS:</h3>
+            <!-- Draggable Pool -->
+            <div class="bg-slate-950/50 p-12 rounded-[4rem] border-4 border-slate-800 shadow-inner">
+                <h3 class="text-center font-black text-slate-600 mb-10 uppercase tracking-[0.4em] text-2xl">Awas! Jangan tersalah pilih:</h3>
                 <div id="draggable-pool" class="flex flex-wrap justify-center gap-8"></div>
             </div>
         </div>
 
-        <!-- SKRIN 4: KEPUTUSAN -->
+        <!-- SKRIN 4: RESULT -->
         <div id="screen-result" class="hidden p-24 text-center">
             <div class="text-[15rem] mb-12 animate-bounce">🏆</div>
-            <h2 class="text-8xl font-title text-sky-600 mb-6">SYABAS!</h2>
-            <div id="result-message" class="text-5xl mb-16 text-gray-700 leading-tight">---</div>
-            <button onclick="resetToPicker()" class="bg-sky-600 hover:bg-sky-700 text-white text-5xl px-24 py-10 rounded-full font-title shadow-2xl transition-transform hover:scale-110">
+            <h2 class="text-8xl font-title text-emerald-400 mb-8">TAHNIAH PAKAR!</h2>
+            <div id="result-message" class="text-5xl mb-20 text-slate-300 leading-tight">---</div>
+            <button onclick="resetToPicker()" class="bg-slate-700 hover:bg-slate-600 text-white text-5xl px-24 py-10 rounded-full font-title shadow-2xl transition-transform hover:scale-110">
                 MURID SETERUSNYA
             </button>
         </div>
 
     </div>
 
-    <!-- Audio Elements -->
     <script>
-        // Setup Audio Objects
+        // Audio Management - Tema Debaran Kuiz
         const sounds = {
-            bg: new Audio('https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3'), // Upbeat BG
-            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'), // Spin click
-            correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_bb4c36098d.mp3'), // Success ding
-            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73051.mp3'), // Error boing
-            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_145d315907.mp3') // Fanfare
+            bg: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_106752d507.mp3'), // Suspense Tense Loop
+            spin: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_73024806a6.mp3'), // Mechanical ticking
+            correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_06ea5bc484.mp3'), // Clean Digital Chime
+            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_f59c259885.mp3'), // Dull Buzzer
+            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_338902d26f.mp3') // Cinematic Win
         };
 
         sounds.bg.loop = true;
-        sounds.bg.volume = 0.3;
+        sounds.bg.volume = 0.25;
         let isMuted = false;
 
         function toggleMusic() {
             isMuted = !isMuted;
             const icon = document.getElementById('music-icon');
-            if (isMuted) {
-                sounds.bg.pause();
-                icon.innerText = '🔇';
-            } else {
-                sounds.bg.play();
-                icon.innerText = '🔊';
-            }
+            if (isMuted) { sounds.bg.pause(); icon.innerText = '🔇'; }
+            else { sounds.bg.play(); icon.innerText = '🔊'; }
         }
 
-        // Database Murid (37 Orang)
-        let students = [
-            "Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah",
-            "Hadif Rayyan", "Izzara Sofea", "Muhammad Adam", "Muhammad Ammar", "Muhammad Aqil",
-            "Muhammad Arshad", "Muhammad Ashraf", "Muhammad Danish", "Muhammad Fattah", "Muhammad Hafiz",
-            "Muhammad Haziq", "Muhammad Iman", "Muhammad Irfan", "Muhammad Izwan", "Muhammad Luqman",
-            "Muhammad Mikhail", "Muhammad Nabil", "Muhammad Nazmi", "Muhammad Qayyum", "Muhammad Rayyan",
-            "Muhammad Rizqi", "Muhammad Syahmi", "Muhammad Syamil", "Muhammad Uwais", "Muhammad Zafri",
-            "Nur Aisha", "Nur Batrisya", "Nur Damia", "Nur Farhana", "Nur Humaira", "Nurul Izzah", "Zarith Sofia"
-        ];
+        // Murid 3 UPM
+        let students = ["Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah", "Hadif Rayyan", "Izzara Sofea", "Muhammad Adam", "Muhammad Ammar", "Muhammad Aqil", "Muhammad Arshad", "Muhammad Ashraf", "Muhammad Danish", "Muhammad Fattah", "Muhammad Hafiz", "Muhammad Haziq", "Muhammad Iman", "Muhammad Irfan", "Muhammad Izwan", "Muhammad Luqman", "Muhammad Mikhail", "Muhammad Nabil", "Muhammad Nazmi", "Muhammad Qayyum", "Muhammad Rayyan", "Muhammad Rizqi", "Muhammad Syahmi", "Muhammad Syamil", "Muhammad Uwais", "Muhammad Zafri", "Nur Aisha", "Nur Batrisya", "Nur Damia", "Nur Farhana", "Nur Humaira", "Nurul Izzah", "Zarith Sofia"];
 
         const functionLibrary = [
             { id: 'f1', text: 'MEMOTONG', type: 'kacip' },
@@ -239,120 +206,106 @@
         ];
 
         const foodLibrary = {
-            kacip: [
-                { id: 'k1', emoji: '🍎', name: 'EPAL' }, { id: 'k2', emoji: '🥕', name: 'LOBAK' },
-                { id: 'k3', emoji: '🍞', name: 'ROTI' }, { id: 'k4', emoji: '🍫', name: 'COKLAT' },
-                { id: 'k5', emoji: '🥒', name: 'TIMUN' }, { id: 'k6', emoji: '🍐', name: 'PEAR' }
-            ],
-            taring: [
-                { id: 't1', emoji: '🍗', name: 'AYAM' }, { id: 't2', emoji: '🥩', name: 'DAGING' },
-                { id: 't3', emoji: '🦑', name: 'SOTONG' }, { id: 't4', emoji: '🦐', name: 'UDANG' },
-                { id: 't5', emoji: '🐟', name: 'IKAN' }, { id: 't6', emoji: '🍖', name: 'KAMBING' }
-            ],
-            geraham: [
-                { id: 'g1', emoji: '🥜', name: 'KACANG' }, { id: 'g2', emoji: '🍪', name: 'BISKUT' },
-                { id: 'g3', emoji: '🌽', name: 'JAGUNG' }, { id: 'g4', emoji: '🍚', name: 'NASI' },
-                { id: 'g5', emoji: '🌰', name: 'BADAM' }, { id: 'g6', emoji: '🌻', name: 'KUACI' }
-            ]
+            kacip: [{ id: 'k1', emoji: '🍎', name: 'EPAL' }, { id: 'k2', emoji: '🥕', name: 'LOBAK' }, { id: 'k3', emoji: '🍞', name: 'ROTI' }, { id: 'k4', emoji: '🍫', name: 'COKLAT' }, { id: 'k5', emoji: '🥒', name: 'TIMUN' }],
+            taring: [{ id: 't1', emoji: '🍗', name: 'AYAM' }, { id: 't2', emoji: '🥩', name: 'DAGING' }, { id: 't3', emoji: '🦑', name: 'SOTONG' }, { id: 't4', emoji: '🦐', name: 'UDANG' }, { id: 't5', emoji: '🐟', name: 'IKAN' }],
+            geraham: [{ id: 'g1', emoji: '🥜', name: 'KACANG' }, { id: 'g2', emoji: '🍪', name: 'BISKUT' }, { id: 'g3', emoji: '🌽', name: 'JAGUNG' }, { id: 'g4', emoji: '🍚', name: 'NASI' }, { id: 'g5', emoji: '🌻', name: 'KUACI' }]
         };
 
-        let currentStudent = "";
-        let secondsElapsed = 0;
-        let score = 0;
-        let timerInterval;
+        // PENGGANGGU (DISTRACTORS)
+        const distractors = [
+            { id: 'd1', text: 'MENGHIDU', type: 'wrong', category: 'function', emoji: '👃' },
+            { id: 'd2', text: 'MELIHAT', type: 'wrong', category: 'function', emoji: '👁️' },
+            { id: 'd3', text: 'BATU', type: 'wrong', category: 'food', emoji: '🪨' },
+            { id: 'd4', text: 'KAYU', type: 'wrong', category: 'food', emoji: '🪵' },
+            { id: 'd5', text: 'SUDU', type: 'wrong', category: 'food', emoji: '🥄' }
+        ];
 
-        function showScreen(screenId) {
-            ['screen-picker', 'screen-ready', 'screen-game', 'screen-result'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(screenId).classList.remove('hidden');
+        let currentStudent = "";
+        let seconds = 0;
+        let score = 0;
+        let timer;
+
+        function showScreen(id) {
+            ['screen-picker', 'screen-ready', 'screen-game', 'screen-result'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
         function pickName() {
-            if (students.length === 0) {
-                document.getElementById('name-display').innerText = "SEMUA DAH JAWAB!";
-                return;
-            }
-
-            // Start BG Music on first interaction
-            if (!isMuted && sounds.bg.paused) sounds.bg.play().catch(() => {});
-
+            if (students.length === 0) return;
+            if (!isMuted && sounds.bg.paused) sounds.bg.play().catch(()=>{});
+            
             const btn = document.getElementById('btn-pick');
             const display = document.getElementById('name-display');
             btn.disabled = true;
-            
             sounds.spin.currentTime = 0;
             sounds.spin.play();
 
-            let counter = 0;
-            const scrollInterval = setInterval(() => {
-                const tempName = students[Math.floor(Math.random() * students.length)];
-                display.innerText = tempName.toUpperCase();
-                counter++;
-                if(counter > 25) {
-                    clearInterval(scrollInterval);
-                    const pickIndex = Math.floor(Math.random() * students.length);
-                    currentStudent = students[pickIndex];
-                    students.splice(pickIndex, 1);
+            let count = 0;
+            const interval = setInterval(() => {
+                const temp = students[Math.floor(Math.random() * students.length)];
+                display.innerText = temp.toUpperCase();
+                count++;
+                if(count > 25) {
+                    clearInterval(interval);
+                    const idx = Math.floor(Math.random() * students.length);
+                    currentStudent = students[idx];
+                    students.splice(idx, 1);
                     document.getElementById('remaining-count').innerText = students.length;
-
-                    display.classList.add('scale-110', 'text-orange-600', 'bg-orange-50');
-                    setTimeout(() => showReadyScreen(), 1500);
+                    display.classList.add('text-blue-400', 'scale-110');
+                    setTimeout(() => {
+                        showScreen('screen-ready');
+                        document.getElementById('ready-name').innerText = currentStudent.toUpperCase();
+                    }, 1500);
                 }
             }, 80);
-        }
-
-        function showReadyScreen() {
-            showScreen('screen-ready');
-            document.getElementById('ready-name').innerText = currentStudent.toUpperCase();
         }
 
         function startGame() {
             showScreen('screen-game');
             document.getElementById('current-player').innerText = currentStudent.toUpperCase();
-            score = 0;
-            secondsElapsed = 0;
+            score = 0; seconds = 0;
             updateScore();
-            initDraggables();
+            initPool();
             
-            const timerEl = document.getElementById('timer');
-            timerEl.innerText = "0s";
-            
-            timerInterval = setInterval(() => {
-                secondsElapsed++;
-                timerEl.innerText = secondsElapsed + "s";
+            document.getElementById('timer').innerText = "0";
+            timer = setInterval(() => {
+                seconds++;
+                document.getElementById('timer').innerText = seconds;
             }, 1000);
         }
 
-        function initDraggables() {
+        function initPool() {
             const pool = document.getElementById('draggable-pool');
             pool.innerHTML = '';
             
-            const selectedFoods = [
+            // Pilih makanan betul
+            const correctFoods = [
                 { ...foodLibrary.kacip[Math.floor(Math.random() * foodLibrary.kacip.length)], type: 'kacip', category: 'food' },
                 { ...foodLibrary.taring[Math.floor(Math.random() * foodLibrary.taring.length)], type: 'taring', category: 'food' },
                 { ...foodLibrary.geraham[Math.floor(Math.random() * foodLibrary.geraham.length)], type: 'geraham', category: 'food' }
             ];
 
+            // Pilih 2 pengganggu secara rawak
+            const shuffledDistractors = [...distractors].sort(() => 0.5 - Math.random()).slice(0, 2);
+
             const allItems = [
                 ...functionLibrary.map(f => ({ ...f, category: 'function' })),
-                ...selectedFoods
-            ];
-
-            allItems.sort(() => Math.random() - 0.5);
+                ...correctFoods,
+                ...shuffledDistractors
+            ].sort(() => 0.5 - Math.random());
 
             allItems.forEach(item => {
                 const el = document.createElement('div');
-                el.className = 'draggable bg-white border-4 border-gray-300 p-8 rounded-[2rem] shadow-xl flex items-center gap-6 font-black hover:border-sky-500 hover:shadow-sky-200 transition-all active:scale-95';
+                el.className = 'draggable bg-slate-800 border-2 border-slate-700 p-8 rounded-[2rem] shadow-xl flex items-center gap-6 font-black hover:border-blue-500 hover:bg-slate-700 transition-all active:scale-95';
                 el.draggable = true;
                 el.dataset.type = item.type;
                 el.dataset.category = item.category;
                 el.dataset.id = item.id;
                 
                 if(item.category === 'function') {
-                    el.innerHTML = `<span class="text-4xl text-sky-500">⚙️</span> <span class="text-3xl">${item.text}</span>`;
+                    el.innerHTML = `<span class="text-4xl">⚙️</span> <span class="text-2xl text-white">${item.text}</span>`;
                 } else {
-                    el.innerHTML = `<span class="text-6xl">${item.emoji}</span> <span class="text-3xl">${item.name}</span>`;
+                    el.innerHTML = `<span class="text-6xl">${item.emoji}</span> <span class="text-2xl text-white">${item.name || item.text}</span>`;
                 }
 
                 el.addEventListener('dragstart', e => {
@@ -374,76 +327,53 @@
             e.preventDefault();
             const zone = e.currentTarget;
             zone.classList.remove('drag-over');
-            
             const data = JSON.parse(e.dataTransfer.getData('text/plain'));
             const draggedEl = document.querySelector(`[data-id="${data.id}"]`);
 
-            if (zone.dataset.type === data.type && zone.dataset.category === data.category && zone.children.length <= 1) {
-                sounds.correct.currentTime = 0;
-                sounds.correct.play();
-                
+            // Logik: Mesti kategori sama, type sama, dan zone belum ada item
+            if (data.type === zone.dataset.type && data.category === zone.dataset.category && zone.children.length <= 1) {
+                sounds.correct.currentTime = 0; sounds.correct.play();
                 zone.innerHTML = '';
-                const successItem = draggedEl.cloneNode(true);
-                successItem.className = "flex flex-col items-center justify-center animate-bounce text-center";
-                successItem.innerHTML = draggedEl.innerHTML;
-                zone.appendChild(successItem);
+                const success = draggedEl.cloneNode(true);
+                success.className = "flex flex-col items-center justify-center animate-bounce text-center scale-90";
+                zone.appendChild(success);
                 draggedEl.remove();
-                
-                score++;
-                updateScore();
-                if(score === 6) finishGame();
+                score++; updateScore();
+                if(score === 6) finish();
             } else {
-                sounds.wrong.currentTime = 0;
-                sounds.wrong.play();
-                zone.classList.add('bg-red-200', 'border-red-600');
-                setTimeout(() => zone.classList.remove('bg-red-200', 'border-red-600'), 500);
+                sounds.wrong.currentTime = 0; sounds.wrong.play();
+                zone.classList.add('bg-rose-900/40', 'border-rose-500');
+                setTimeout(() => zone.classList.remove('bg-rose-900/40', 'border-rose-500'), 600);
             }
         }
 
-        function updateScore() {
-            document.getElementById('score').innerText = `${score}/6`;
-        }
+        function updateScore() { document.getElementById('score').innerText = `${score}/6`; }
 
-        function finishGame() {
-            clearInterval(timerInterval);
+        function finish() {
+            clearInterval(timer);
             sounds.victory.play();
             showScreen('screen-result');
-            const resultMsg = document.getElementById('result-message');
-            resultMsg.innerHTML = `Hebat <b>${currentStudent.toUpperCase()}</b>!<br>Anda berjaya memadankan semua dalam masa <span class="text-orange-600 font-black">${secondsElapsed} SAAT</span>!`;
+            document.getElementById('result-message').innerHTML = `Luar biasa, <b>${currentStudent.toUpperCase()}</b>!<br>Anda menyelesaikan cabaran dalam masa <span class="text-orange-500 font-black">${seconds} SAAT</span>!`;
             createConfetti();
         }
 
         function resetToPicker() {
-            const btn = document.getElementById('btn-pick');
-            const display = document.getElementById('name-display');
-            btn.disabled = false;
-            display.innerText = "SEDIA?";
-            display.className = "text-7xl md:text-8xl font-title text-sky-600 mb-12 min-h-[120px] flex items-center justify-center bg-sky-50 px-16 rounded-[3rem] border-4 border-sky-100 shadow-sm";
-            
+            document.getElementById('btn-pick').disabled = false;
+            document.getElementById('name-display').innerText = "SEDIA?";
+            document.getElementById('name-display').classList.remove('text-blue-400', 'scale-110');
             showScreen('screen-picker');
-            
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = `<p class="text-2xl text-gray-300 font-black uppercase">${zone.dataset.category}</p>`;
-            });
+            document.querySelectorAll('.drop-zone').forEach(z => z.innerHTML = `<span class="uppercase opacity-20">${z.dataset.category}</span>`);
         }
 
         function createConfetti() {
             for(let i=0; i<100; i++) {
                 const c = document.createElement('div');
-                c.className = 'confetti';
+                c.className = 'fixed w-4 h-4 z-[1000]';
                 c.style.left = Math.random() * 100 + 'vw';
-                c.style.backgroundColor = ['#fbbf24', '#f472b6', '#22d3ee', '#4ade80', '#fb923c'][Math.floor(Math.random()*5)];
+                c.style.backgroundColor = ['#38bdf8', '#fb7185', '#fbbf24', '#34d399'][Math.floor(Math.random()*4)];
                 c.style.top = '-20px';
-                c.style.borderRadius = i % 2 === 0 ? '50%' : '0%';
                 document.body.appendChild(c);
-                
-                c.animate([
-                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
-                    { transform: `translateY(105vh) rotate(${Math.random() * 1000}deg)`, opacity: 0 }
-                ], {
-                    duration: 3000 + Math.random() * 3000,
-                    easing: 'cubic-bezier(0, .9, .6, 1)'
-                }).onfinish = () => c.remove();
+                c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(105vh) rotate(${Math.random() * 1000}deg)`, opacity: 0 }], { duration: 3000 }).onfinish = () => c.remove();
             }
         }
     </script>

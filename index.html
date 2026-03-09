@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sains Tahun 3: Pakar Gigi (Versi TV 2.0)</title>
+    <title>Sains Tahun 3: Pakar Gigi (Versi Muzik & TV)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -53,7 +53,6 @@
             height: 15px;
             z-index: 1000;
         }
-        /* Animasi butang sedia */
         .btn-pulse {
             animation: pulse 2s infinite;
         }
@@ -62,12 +61,26 @@
             50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(249, 115, 22, 0.5); }
             100% { transform: scale(1); }
         }
+        /* Style untuk butang audio */
+        #audio-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+        }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
-    <div id="game-container" class="max-w-[1400px] mx-auto bg-white rounded-[4rem] shadow-2xl overflow-hidden border-[15px] border-sky-200">
+    <div id="game-container" class="max-w-[1400px] mx-auto bg-white rounded-[4rem] shadow-2xl overflow-hidden border-[15px] border-sky-200 relative">
         
+        <!-- Butang Kawalan Muzik -->
+        <div id="audio-control">
+            <button onclick="toggleMusic()" class="bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition-all">
+                <span id="music-icon" class="text-3xl">🔊</span>
+            </button>
+        </div>
+
         <!-- Header Utama -->
         <header class="bg-sky-600 p-8 text-white text-center shadow-lg relative">
             <h1 class="text-5xl md:text-7xl mb-2 tracking-wide">🦷 MISI PAKAR GIGI 🦷</h1>
@@ -129,7 +142,6 @@
 
             <!-- Zon Target -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-                <!-- Kacip -->
                 <div class="bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-200 flex flex-col items-center shadow-xl">
                     <div class="slot-title shadow-lg">GIGI KACIP</div>
                     <div class="text-8xl mb-6">🦷</div>
@@ -141,7 +153,6 @@
                     </div>
                 </div>
 
-                <!-- Taring -->
                 <div class="bg-red-50 p-8 rounded-[3rem] border-4 border-red-200 flex flex-col items-center shadow-xl">
                     <div class="slot-title bg-red-600 shadow-lg">GIGI TARING</div>
                     <div class="text-8xl mb-6">🧛</div>
@@ -153,7 +164,6 @@
                     </div>
                 </div>
 
-                <!-- Geraham -->
                 <div class="bg-yellow-50 p-8 rounded-[3rem] border-4 border-yellow-200 flex flex-col items-center shadow-xl">
                     <div class="slot-title bg-yellow-600 shadow-lg">GIGI GERAHAM</div>
                     <div class="text-8xl mb-6">🦷</div>
@@ -166,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Pool Item -->
             <div class="bg-white p-10 rounded-[4rem] border-8 border-sky-100 shadow-inner">
                 <h3 class="text-center font-black text-gray-400 mb-8 uppercase tracking-[0.3em] text-2xl">TARIK JAWAPAN KE ATAS:</h3>
                 <div id="draggable-pool" class="flex flex-wrap justify-center gap-8"></div>
@@ -185,7 +194,33 @@
 
     </div>
 
+    <!-- Audio Elements -->
     <script>
+        // Setup Audio Objects
+        const sounds = {
+            bg: new Audio('https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3'), // Upbeat BG
+            spin: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3'), // Spin click
+            correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_bb4c36098d.mp3'), // Success ding
+            wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73051.mp3'), // Error boing
+            victory: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_145d315907.mp3') // Fanfare
+        };
+
+        sounds.bg.loop = true;
+        sounds.bg.volume = 0.3;
+        let isMuted = false;
+
+        function toggleMusic() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('music-icon');
+            if (isMuted) {
+                sounds.bg.pause();
+                icon.innerText = '🔇';
+            } else {
+                sounds.bg.play();
+                icon.innerText = '🔊';
+            }
+        }
+
         // Database Murid (37 Orang)
         let students = [
             "Aaisyah Saffiyah", "Ahmad Daniyal", "Che Danish", "Danish Haikal", "Fatin Maisarah",
@@ -203,7 +238,6 @@
             { id: 'f3', text: 'MELUMAT', type: 'geraham' }
         ];
 
-        // Library Makanan Lebih Banyak (18 Item)
         const foodLibrary = {
             kacip: [
                 { id: 'k1', emoji: '🍎', name: 'EPAL' }, { id: 'k2', emoji: '🥕', name: 'LOBAK' },
@@ -234,17 +268,22 @@
             document.getElementById(screenId).classList.remove('hidden');
         }
 
-        // 1. Name Picker (Dengan penyingkiran nama)
         function pickName() {
             if (students.length === 0) {
                 document.getElementById('name-display').innerText = "SEMUA DAH JAWAB!";
                 return;
             }
 
+            // Start BG Music on first interaction
+            if (!isMuted && sounds.bg.paused) sounds.bg.play().catch(() => {});
+
             const btn = document.getElementById('btn-pick');
             const display = document.getElementById('name-display');
             btn.disabled = true;
             
+            sounds.spin.currentTime = 0;
+            sounds.spin.play();
+
             let counter = 0;
             const scrollInterval = setInterval(() => {
                 const tempName = students[Math.floor(Math.random() * students.length)];
@@ -254,8 +293,6 @@
                     clearInterval(scrollInterval);
                     const pickIndex = Math.floor(Math.random() * students.length);
                     currentStudent = students[pickIndex];
-                    
-                    // Buang nama murid dari senarai
                     students.splice(pickIndex, 1);
                     document.getElementById('remaining-count').innerText = students.length;
 
@@ -270,7 +307,6 @@
             document.getElementById('ready-name').innerText = currentStudent.toUpperCase();
         }
 
-        // 2. Mula Permainan (Jam bermula di sini)
         function startGame() {
             showScreen('screen-game');
             document.getElementById('current-player').innerText = currentStudent.toUpperCase();
@@ -288,12 +324,10 @@
             }, 1000);
         }
 
-        // 3. Init Draggables (Setiap murid dapat makanan berbeza)
         function initDraggables() {
             const pool = document.getElementById('draggable-pool');
             pool.innerHTML = '';
             
-            // Pilih 1 makanan rawak dari setiap kategori
             const selectedFoods = [
                 { ...foodLibrary.kacip[Math.floor(Math.random() * foodLibrary.kacip.length)], type: 'kacip', category: 'food' },
                 { ...foodLibrary.taring[Math.floor(Math.random() * foodLibrary.taring.length)], type: 'taring', category: 'food' },
@@ -305,7 +339,6 @@
                 ...selectedFoods
             ];
 
-            // Shuffle pool
             allItems.sort(() => Math.random() - 0.5);
 
             allItems.forEach(item => {
@@ -346,6 +379,9 @@
             const draggedEl = document.querySelector(`[data-id="${data.id}"]`);
 
             if (zone.dataset.type === data.type && zone.dataset.category === data.category && zone.children.length <= 1) {
+                sounds.correct.currentTime = 0;
+                sounds.correct.play();
+                
                 zone.innerHTML = '';
                 const successItem = draggedEl.cloneNode(true);
                 successItem.className = "flex flex-col items-center justify-center animate-bounce text-center";
@@ -357,6 +393,8 @@
                 updateScore();
                 if(score === 6) finishGame();
             } else {
+                sounds.wrong.currentTime = 0;
+                sounds.wrong.play();
                 zone.classList.add('bg-red-200', 'border-red-600');
                 setTimeout(() => zone.classList.remove('bg-red-200', 'border-red-600'), 500);
             }
@@ -368,6 +406,7 @@
 
         function finishGame() {
             clearInterval(timerInterval);
+            sounds.victory.play();
             showScreen('screen-result');
             const resultMsg = document.getElementById('result-message');
             resultMsg.innerHTML = `Hebat <b>${currentStudent.toUpperCase()}</b>!<br>Anda berjaya memadankan semua dalam masa <span class="text-orange-600 font-black">${secondsElapsed} SAAT</span>!`;
@@ -383,7 +422,6 @@
             
             showScreen('screen-picker');
             
-            // Kosongkan zone
             document.querySelectorAll('.drop-zone').forEach(zone => {
                 zone.innerHTML = `<p class="text-2xl text-gray-300 font-black uppercase">${zone.dataset.category}</p>`;
             });
